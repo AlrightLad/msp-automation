@@ -1,5 +1,7 @@
 # msp-automation
 
+![CI](https://github.com/AlrightLad/msp-automation/actions/workflows/ci.yml/badge.svg)
+
 PowerShell automation for managed Windows infrastructure, written to run
 unattended under an RMM against a fleet of several thousand endpoints.
 

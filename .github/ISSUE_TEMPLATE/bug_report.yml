@@ -1,0 +1,61 @@
+name: Bug report
+description: A script behaves differently from its comment-based help or the RMM-safety contract
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before posting, redact everything that identifies your tenant: hostnames, client and site names, ticket numbers, custom-field names, credential values, UNC paths and internal URLs. Transcripts in particular carry hostnames on every line. Anything that reaches this public tracker stays in its history.
+  - type: input
+    id: script
+    attributes:
+      label: Script and commit
+      description: Path of the script and the commit SHA you deployed
+      placeholder: backup-veeam/Invoke-VeeamV13Upgrade.ps1 at a26abfb
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Windows edition and build, and the device role
+      placeholder: Windows Server 2019 Standard 17763, Hyper-V host running Veeam B&R
+    validations:
+      required: true
+  - type: input
+    id: psversion
+    attributes:
+      label: PowerShell version
+      description: Output of `$PSVersionTable.PSVersion`, and whether the host process was 32- or 64-bit
+      placeholder: 5.1.17763.6414, 32-bit RMM host (relaunched to SysNative)
+    validations:
+      required: true
+  - type: input
+    id: rmm
+    attributes:
+      label: RMM platform
+      description: RMM product and how the script was run (Run As, preset variables set, scheduled or ad hoc)
+      placeholder: NinjaOne, Run As SYSTEM, preflightOnly=1
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Exact error
+      description: The message verbatim, the exit code the RMM recorded, and the line number if the transcript shows one
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: transcript
+    attributes:
+      label: Transcript excerpt
+      description: The relevant lines from the transcript under %ProgramData%\<ORG>\Logs\..., with hostnames and identifiers redacted
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: Point at the help text, the exit-code contract, or the Pester test that describes the behaviour you expected

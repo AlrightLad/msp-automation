@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a change to a script or a new script
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is being done by hand, or going wrong, and on how many devices. A concrete case beats a general one.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What the script should do instead. Name the `$env:` inputs it would read and the exit code for each outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including doing it in the RMM itself, or in a vendor tool
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - backup-veeam
+        - msft-windows
+        - oem-dell
+        - oem-intel
+        - windmill (reference implementations)
+        - tests / CI / repository
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: RMM-safety contract
+      description: The change keeps every item below true
+      options:
+        - label: No interactive input; every input is a documented `$env:` variable, none is a `[switch]`
+          required: true
+        - label: Single-instance mutex, transcript with rotation, exit codes 0 / 1 / 2 only
+          required: true
+        - label: A report-only mode exists for anything that changes state
+          required: true
