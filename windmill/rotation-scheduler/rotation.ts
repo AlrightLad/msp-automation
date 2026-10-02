@@ -314,7 +314,7 @@ export type EtNow = { ymd: string; dow: number; minutes: number; iso: string; ms
 export const toMin = (hm: string) => { const [h, m] = hm.split(":").map(Number); return h * 60 + m; };
 export const addDays = (ymd: string, n: number) => { const d = new Date(`${ymd}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 export const isoDow = (ymd: string) => ((new Date(`${ymd}T00:00:00Z`).getUTCDay() + 6) % 7) + 1;
-export const daysBetween = (a: string, b: string) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86400000);
+export const daysBetween = (a: string, b: string) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
 export const mondayOf = (ymd: string) => addDays(ymd, -(isoDow(ymd) - 1));
 export const saturdayOnOrAfter = (ymd: string) => addDays(ymd, (6 - isoDow(ymd) + 7) % 7);
 const mod = (n: number, m: number) => ((n % m) + m) % m;
@@ -336,8 +336,8 @@ const ET_MIDNIGHT = new Map<string, number>();
 export function etMidnightMs(ymd: string): number {
   const hit = ET_MIDNIGHT.get(ymd); if (hit != null) return hit;
   const utc = Date.parse(`${ymd}T00:00:00Z`);
-  for (const h of [4, 5]) { const ms = utc + h * 3600000; const e = etNow(ms); if (e.ymd === ymd && e.minutes === 0) { ET_MIDNIGHT.set(ymd, ms); return ms; } }
-  const fb = utc + 4 * 3600000; ET_MIDNIGHT.set(ymd, fb); return fb;
+  for (const h of [4, 5]) { const ms = utc + h * 3_600_000; const e = etNow(ms); if (e.ymd === ymd && e.minutes === 0) { ET_MIDNIGHT.set(ymd, ms); return ms; } }
+  const fb = utc + 4 * 3_600_000; ET_MIDNIGHT.set(ymd, fb); return fb;
 }
 
 // Deterministic weekly cycle: how many whole weeks `ymd` is from the anchor picks the person.
@@ -1537,9 +1537,9 @@ export function assemble(now: EtNow, rc: RcResult | null, weeks: number, action:
     config: { key: CONFIG_KEY, oncall_source: resolved.oncall_source, swing_source: resolved.swing_source, problems: resolved.problems },
     viewer: viewer ?? { email: null, party: null, note: "identity not resolved", ...viewerRoles(null, cfg), ...adminFields(null, { admins: [], note: null }) } };
   // Swap history is the last 90 days by period (the same window the manager view uses for Saturdays).
-  const recent = swaps.map(normSwap).filter(s => swapStartMs(s) > now.ms - HISTORY_DAYS * 86400000).map(s => swapView(s, now.ms))
+  const recent = swaps.map(normSwap).filter(s => swapStartMs(s) > now.ms - HISTORY_DAYS * 86_400_000).map(s => swapView(s, now.ms))
     .sort((a, b) => (a.status === "pending" ? 0 : 1) - (b.status === "pending" ? 0 : 1) || (a.covers.from < b.covers.from ? -1 : a.covers.from > b.covers.from ? 1 : 0));
-  const recentOvr = (extras.overrides ?? []).filter(o => periodStartMs(o.kind, o.covers.from) > now.ms - HISTORY_DAYS * 86400000).map(overrideView)
+  const recentOvr = (extras.overrides ?? []).filter(o => periodStartMs(o.kind, o.covers.from) > now.ms - HISTORY_DAYS * 86_400_000).map(overrideView)
     .sort((a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1) || (a.covers.from < b.covers.from ? -1 : a.covers.from > b.covers.from ? 1 : 0));
   if (action === "all" || action === "details" || action === "oncall") {
     const oncall = buildOncall(now, cfg.oncall, weeks, swaps, extras.overrides ?? []);

@@ -85,7 +85,7 @@ Describe 'Get-VeeamAgentEntries' {
     Context 'registry holds a Veeam Agent beside unrelated products' {
         BeforeAll {
             Mock Get-ItemProperty {
-                [pscustomobject]@{ DisplayName = 'Veeam Agent for Microsoft Windows'; DisplayVersion = '6.0.0.960'; PSChildName = '{11111111-2222-3333-4444-555555555555}'; UninstallString = 'MsiExec.exe /X{1111}'; QuietUninstallString = $null; PSPath = 'HKLM:\x\{1111}' }
+                [pscustomobject]@{ DisplayName = 'Veeam Agent for Microsoft Windows'; DisplayVersion = '6.0.0.960'; PSChildName = '{aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee}'; UninstallString = 'MsiExec.exe /X{1111}'; QuietUninstallString = $null; PSPath = 'HKLM:\x\{1111}' }
                 [pscustomobject]@{ DisplayName = 'Some Other Product';               DisplayVersion = '1.0';       PSChildName = '{AAAA}'; UninstallString = 'x'; QuietUninstallString = $null; PSPath = 'HKLM:\x\{AAAA}' }
                 [pscustomobject]@{ DisplayName = $null;                              DisplayVersion = $null;       PSChildName = '{BBBB}'; UninstallString = $null; QuietUninstallString = $null; PSPath = 'HKLM:\x\{BBBB}' }
             }
@@ -94,7 +94,7 @@ Describe 'Get-VeeamAgentEntries' {
             $e = @(Get-VeeamAgentEntries)
             $e.Count          | Should -Be 1
             $e[0].DisplayName | Should -Be 'Veeam Agent for Microsoft Windows'
-            $e[0].ProductCode | Should -Be '{11111111-2222-3333-4444-555555555555}'
+            $e[0].ProductCode | Should -Be '{aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee}'
             $e[0].KeyPath     | Should -Be 'HKLM:\x\{1111}'
         }
         It 'reads both uninstall hives' {
