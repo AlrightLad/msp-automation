@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-and-test:
+    name: PSScriptAnalyzer and Pester
+    runs-on: windows-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install PSScriptAnalyzer and Pester
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
+          Install-Module -Name Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
+          Get-Module -ListAvailable PSScriptAnalyzer, Pester |
+            Sort-Object Name, Version -Descending |
+            Select-Object Name, Version |
+            Format-Table -AutoSize
+
+      - name: PSScriptAnalyzer (Warning and Error must be empty)
+        shell: pwsh
+        run: |
+          $findings = @(Invoke-ScriptAnalyzer -Path . -Recurse -Severity Warning, Error)
+          if ($findings.Count -gt 0) {
+            $findings |
+              Select-Object Severity, RuleName, ScriptName, Line, Message |
+              Format-Table -AutoSize -Wrap |
+              Out-String -Width 220 |
+              Write-Host
+            throw "PSScriptAnalyzer reported $($findings.Count) finding(s) at Warning or Error."
+          }
+          Write-Host 'PSScriptAnalyzer: no findings at Warning or Error.'
+
+      - name: Pester
+        shell: pwsh
+        run: |
+          Import-Module Pester -MinimumVersion 5.5.0 -ErrorAction Stop
+          if (-not (Get-ChildItem -Path tests -Filter *.Tests.ps1 -Recurse -ErrorAction SilentlyContinue)) {
+            Write-Host 'No test files under tests/ yet; nothing to run.'
+            exit 0
+          }
+          $config = New-PesterConfiguration
+          $config.Run.Path = 'tests'
+          $config.Run.Exit = $true
+          $config.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $config
