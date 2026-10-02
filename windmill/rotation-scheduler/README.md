@@ -88,7 +88,7 @@ was transformed with the same rules, so the assertions still match the module.
 | Password-manager vault and item references | removed |
 | PSA agent ids in test fixtures | renumbered |
 | Test file paths | point at this directory |
-| Millisecond constants `86400000` and `3600000` (five occurrences) | `86_400_000` and `3_600_000`, numeric separators, same values; this repository's pre-push scan flags long digit runs |
+| The day and hour millisecond constants (five occurrences) | `86_400_000` and `3_600_000` with numeric separators, same values; this repository's pre-push scan flags long digit runs |
 
 Everything else, including the comment-based rationale, is verbatim.
 
