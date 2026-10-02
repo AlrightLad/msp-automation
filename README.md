@@ -18,11 +18,11 @@ rules, and a reader can open any file and check.
 |---|---|
 | **No interactive input** | No `Read-Host`, no `Get-Credential`, no `Pause`, no "press any key". Not even as a fallback when run by hand. |
 | **Input via `$env:`, never `[switch]`** | RMM platforms pass script variables as environment variables. `[switch]` parameters do not bind from environment variables and fail silently, so every input is read from `$env:` with a sane default. Boolean inputs accept `true`/`1`. |
-| **Single-instance mutex** | A named `System.Threading.Mutex` guards each run. A second instance exits with a warning instead of racing the first. An abandoned mutex from a crashed run is acquired, not treated as fatal. |
+| **Single-instance mutex** | A named `System.Threading.Mutex` guards each run. A second instance exits at once instead of racing the first: `2` for a remediation script, `0` for a monitor that must not raise a false alarm. An abandoned mutex from a crashed run is acquired, not treated as fatal. |
 | **Transcript with rotation** | `Start-Transcript` writes to the RMM's log root, and older transcripts for the same script are pruned so a scheduled job cannot fill a disk over months. |
 | **Exit codes 0 / 1 / 2** | `0` success, `1` failure, `2` warning. Nothing else. The RMM maps these to conditions and tickets, and a vendor installer's `3010` has no meaning to it. |
 | **32-bit host by default** | RMM agents typically launch 32-bit PowerShell. Scripts work there. A script that genuinely needs the 64-bit host (Hyper-V, Veeam, some vendor modules) relaunches itself through `sysnative` and returns the child's exit code. |
-| **Minimum PowerShell 5.1** | Declared with `#Requires -Version 5.1`. No PowerShell 7-only syntax. |
+| **Minimum PowerShell 5.1** | Declared with `#Requires -Version 5.1`, and no PowerShell 7-only syntax. A script that deliberately targets older hosts declares its real floor and says why in its help: the Dell lifecycle audit runs on WMF 3 servers and declares 3.0. |
 
 Scripts that are **read-only by design** (audits, collectors) say so in their
 help and make no change to the host.

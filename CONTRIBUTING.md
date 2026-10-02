@@ -10,8 +10,11 @@ Pull requests are welcome. The bar is the same for every file, including mine.
    Invoke-ScriptAnalyzer -Path . -Recurse -Severity Warning,Error
    ```
 
-   Must return nothing. Do not suppress a rule to make it pass. If a rule is
-   genuinely wrong for the case, say why in the PR and we decide together.
+   Must return nothing. No settings file and no repo-wide exclusions. Where a
+   rule is wrong for the case, suppress it inline on that function or script
+   with a `Justification` a reviewer can check. The usual legitimate cases are
+   `Write-Host` in an RMM logging shim, which the RMM captures as the job log,
+   and `ShouldProcess` on a script that by contract can never prompt.
 
 2. **Pester covers a happy path and a failure path** for the script you touched.
    Tests live in `tests/<script-name>.Tests.ps1` and run with Pester 5 or later:
@@ -48,10 +51,16 @@ Categories match the top-level directories.
 Nothing that identifies a customer, host, network, ticket, person, or
 credential is accepted, in code or in comments. Use the placeholders listed in
 README.md. Delete example output and sample log lines rather than editing them.
-Run the pre-push scan from the repo root before you open the PR:
 
-```bash
-grep -rniE 'dtctoday|192\.168|10\.[0-9]+\.[0-9]+\.[0-9]+|\\\\[A-Z0-9-]{4,}\\|[0-9]{7}|IKEY|SKEY|backblazeb2|public-dtc' .
-```
+Before you open the PR, search the whole tree for the classes below and make
+sure every hit is a placeholder:
 
-It must return nothing.
+- organisation domain names and e-mail addresses
+- hostnames, including abbreviated fleet device names in comments
+- private IP addresses and subnets, and UNC paths
+- seven-digit ticket numbers, and knowledge-base or SOP page references
+- MFA integration keys or any other key, token, or licence string
+- artifact-store hostnames and bucket names
+
+A case-insensitive search for key-like terms will also match `.ContainsKey(`;
+read the hits rather than counting them.
