@@ -34,6 +34,8 @@ backup-veeam/     Veeam Backup & Replication and Veeam Agent
 msft-windows/     Windows Server and workstation OS
 oem-dell/         Dell PowerEdge and OptiPlex / Precision
 oem-intel/        Intel platform components (RST / VROC RAID)
+windmill/         TypeScript reference implementations extracted from Windmill apps;
+                  documented design, not runnable here (see each README)
 tests/            Pester tests, one file per script
 .github/          CI: PSScriptAnalyzer and Pester on every push and PR
 ```
